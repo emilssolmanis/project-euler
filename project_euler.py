@@ -245,6 +245,29 @@ def num_divisors(n):
         
     return divisors
 
+def divisors(n):
+    """
+    Returns a set of proper divisors for n (including n).
+    """
+    factors = factorize(n)
+    divisors = {1}
+    for k in sorted(factors):
+        v = factors[k]
+        divs_pows = set()
+        # add all the powers of k
+        for i in range(v):
+            divs_pows.add(k**(i + 1))
+
+        # add all the c * powers of k
+        divs_mults = set()
+        for p in divs_pows:
+            for d in divisors:
+                divs_mults.add(p * d)
+
+        divisors = divisors.union(divs_pows)
+        divisors = divisors.union(divs_mults)
+    return divisors
+    
 def collatz(n):
     res = []
     while n > 1:
@@ -274,10 +297,10 @@ def isqrt(x):
         x = y
 ## end of http://code.activestate.com/recipes/577821/ }}}
 
-def divisors(num):
+def divisors_blunt(num):
     return [i for i in range(1, num + 1) if num % i == 0]
 
-def divisors_of_triangle(num):
+def divisors_of_triangle_blunt(num):
 
     divs = set()
     if num % 2:
@@ -594,3 +617,24 @@ def problem_20():
     Find the sum of the digits in the number 100!
     """
     return sum(int(i) for i in str(__factorial(100)))
+
+def problem_21():
+    """
+    Let d(n) be defined as the sum of proper divisors of n (numbers less than n which divide evenly into n).
+    If d(a) = b and d(b) = a, where a != b, then a and b are an amicable pair and each of a and b are called amicable numbers.
+
+    For example, the proper divisors of 220 are 1, 2, 4, 5, 10, 11, 20, 22, 44, 55 and 110; therefore d(220) = 284. The proper divisors 
+    of 284 are 1, 2, 4, 71 and 142; so d(284) = 220.
+
+    Evaluate the sum of all the amicable numbers under 10000.
+    """
+    amicable = set()
+
+    for i in range(2, 10000):
+        print("Working on {}".format(i))
+        d_i = sum(divisors(i).difference({i}))
+        if i != d_i and i == sum(divisors(d_i).difference({d_i})):
+            amicable.add(i)
+            amicable.add(d_i)
+
+    return sum(amicable)
