@@ -51,6 +51,9 @@ def __diag_from_top_left(grid):
         yield [grid[row_idx + offset][cols - offset - 1] for offset in range(min(cols - 1, rows - 1 - row_idx), -1, -1)]
 
 def __factorial(n):
+    """
+    Returns n!
+    """
     return prod(i for i in range(1, n + 1))
 
 def __num_grid_paths(x, y):
@@ -60,6 +63,32 @@ def __num_grid_paths(x, y):
     """
     # TODO: somewhat suboptimal, we don't need the full factorials
     return __factorial(x + y) // (__factorial(y) * __factorial(x))
+
+def __num_to_text(num):
+    """
+    Returns a string for num, like "two hundred and fourty seven" for 247. Works in range [1; 1000]
+    """
+    singles = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]
+    teens = ["ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"]
+    tens = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"]
+    
+    if num < 100:
+        if num < 10:
+            return singles[num]
+        elif 9 < num < 20:
+            return teens[num % 10]
+        else:
+            if num % 10 != 0:
+                return "{}-{}".format(tens[num // 10], __num_to_text(num % 10))
+            else:
+                return "{}".format(tens[num // 10])
+    elif num < 1000:
+        if num % 100 != 0:
+            return "{} hundred and {}".format(singles[num // 100], __num_to_text(num % 100))
+        else:
+            return "{} hundred".format(singles[num // 100])
+    else:
+        return "one thousand"
 
 # ############################## PUBLIC TOUCHY TOUCHY ##############################
 
@@ -445,9 +474,8 @@ def problem_17():
     If all the numbers from 1 to 1000 (one thousand) inclusive were written out in words, 
     how many letters would be used?
 
-
     NOTE: Do not count spaces or hyphens. For example, 342 (three hundred and forty-two) 
     contains 23 letters and 115 (one hundred and fifteen) contains 20 letters. The use 
     of "and" when writing out numbers is in compliance with British usage.
     """
-    raise AttributeError("IMPLEMENT ME!")
+    return sum([len(__num_to_text(i).replace(" ", "").replace("-", "")) for i in range(1, 1001)])
