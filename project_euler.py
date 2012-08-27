@@ -169,19 +169,41 @@ def __abundant_below(n):
             previous_abundant.append(i)
             yield i
 
+def __lex_permutations(elem_set):
+    """
+    Generates permutations in lexicographic order. Could rewrite to iterative and
+    obtain generator, but recursive is more natural.
+    """
+    permutations = []
+    if len(elem_set) == 1:
+        permutations.append(list(elem_set))
+    else:
+        for elem in sorted(elem_set):
+            for perm in __lex_permutations(elem_set.difference({elem})):
+                permutations.append([elem] + perm)
+
+    return permutations
+
 # ############################## PUBLIC TOUCHY TOUCHY ##############################
 
-def fibonacci(num):
+def fibonacci(num=None):
     """
-    Generates the first num Fibonacci numbers
+    Generates the first num Fibonacci numbers if num is given, or an infinite series
     """
     pp = 0
     p = 1
-    for i in range(num):
-        yield pp + p
-        newp = pp + p
-        pp = p
-        p = newp
+    if num:
+        for i in range(num):
+            yield pp + p
+            newp = pp + p
+            pp = p
+            p = newp
+    else:
+        while True:
+            yield pp + p
+            newp = pp + p
+            pp = p
+            p = newp
 
 
 def primes_num_gen(num):
@@ -357,26 +379,6 @@ def isqrt(x):
             return x
         x = y
 ## end of http://code.activestate.com/recipes/577821/ }}}
-
-def divisors_blunt(num):
-    return [i for i in range(1, num + 1) if num % i == 0]
-
-def divisors_of_triangle_blunt(num):
-
-    divs = set()
-    if num % 2:
-        odd = num
-        even = num + 1
-    else:
-        odd = num + 1
-        even = num
-
-    for i in divisors(even // 2):
-        divs.add(i)
-        for j in divisors(odd):
-            divs.add(j)
-            divs.add(i * j)
-    return divs
 
 # ######################################## SOLUTIONS ########################################
 
@@ -744,3 +746,46 @@ def problem_23():
     """
     abundant = set([i for i in __abundant_below(28124)])
     return sum(i for i in range(1, 28124) if not __as_sum(abundant, i))
+
+def problem_24():
+    """
+    A permutation is an ordered arrangement of objects. For example, 3124 is one possible 
+    permutation of the digits 1, 2, 3 and 4. If all of the permutations are listed numerically or alphabetically, we call it lexicographic order. The lexicographic permutations of 0, 1 and 2 are:
+    012   021   102   120   201   210
+
+    What is the millionth lexicographic permutation of the digits 0, 1, 2, 3, 4, 5, 6, 7, 8 and 9?
+    """
+    return __lex_permutations({0, 1, 2, 3, 4, 5, 6, 7, 8, 9})[999999]
+
+def problem_25():
+    """
+    The Fibonacci sequence is defined by the recurrence relation:
+
+    F[n] = F[n−1] + F[n−2], where F[1] = 1 and F[2] = 1.
+
+    Hence the first 12 terms will be:
+
+    F[1] = 1
+    F[2] = 1
+    F[3] = 2
+    F[4] = 3
+    F[5] = 5
+    F[6] = 8
+    F[7] = 13
+    F[8] = 21
+    F[9] = 34
+    F[10] = 55
+    F[11] = 89
+    F[12] = 144
+
+    The 12th term, F[12], is the first term to contain three digits.
+
+    What is the first term in the Fibonacci sequence to contain 1000 digits?
+    """
+    # definition differences, Fibo starts as 1, 1, 2 ... in some places, as
+    # 1, 2, 3, 5 ... in others and as 0, 1, 1, 2 ... in elsewhere. This task needs
+    # the 1, 1 thing, my implementation is 1, 2 [..], hence the +1. The other +1 is
+    # because Python indexes from 0.
+    for i, elem in enumerate(fibonacci()):
+        if len(str(elem)) >= 1000:
+            return i + 1 + 1
