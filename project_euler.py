@@ -124,6 +124,12 @@ def __days_in_month(month, year):
     else:
         return days[month - 1]
 
+def __alphabetical_value(word):
+    """
+    Returns an alphabetical value for a given word, where A = 1, B = 2, etc.
+    """
+    return sum(ord(c) - ord('A') + 1 for c in word.upper())
+
 # ############################## PUBLIC TOUCHY TOUCHY ##############################
 
 def fibonacci(num):
@@ -631,10 +637,28 @@ def problem_21():
     amicable = set()
 
     for i in range(2, 10000):
-        print("Working on {}".format(i))
         d_i = sum(divisors(i).difference({i}))
         if i != d_i and i == sum(divisors(d_i).difference({d_i})):
             amicable.add(i)
             amicable.add(d_i)
 
     return sum(amicable)
+
+def problem_22(filename):
+    """
+    Using names.txt (right click and 'Save Link/Target As...'), a 46K text file containing
+    over five-thousand first names, begin by sorting it into alphabetical order. Then 
+    working out the alphabetical value for each name, multiply this value by its alphabetical
+    position in the list to obtain a name score.
+
+    For example, when the list is sorted into alphabetical order, COLIN, which is
+    worth 3 + 15 + 12 + 9 + 14 = 53, is the 938th name in the list. So, COLIN would obtain 
+    a score of 938  53 = 49714.
+
+    What is the total of all the name scores in the file?
+    """
+    with open(filename, "r") as f:
+        names = f.readline().replace("\"", "").split(",")
+        names.sort()
+        alph_scores = sum((i + 1) * __alphabetical_value(names[i]) for i in range(len(names)))
+        return alph_scores
