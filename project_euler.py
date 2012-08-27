@@ -105,6 +105,25 @@ def __triangle_max_sum(triangle):
 
     return __triangle_max_sum(triangle[:-1])
 
+def __is_leap_year(year):
+    """
+    Returns whether the year is a leap year
+    """
+    if year % 100 == 0:
+        return year % 400 == 0
+    else:
+        return year % 4 == 0
+
+def __days_in_month(month, year):
+    """
+    Returns the number of days in month, year.
+    """
+    days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    if month == 2 and __is_leap_year(year):
+        return days[month - 1] + 1
+    else:
+        return days[month - 1]
+
 # ############################## PUBLIC TOUCHY TOUCHY ##############################
 
 def fibonacci(num):
@@ -550,4 +569,28 @@ def problem_19():
 
     How many Sundays fell on the first of the month during the twentieth century (1 Jan 1901 to 31 Dec 2000)?
     """
-    raise AttributeError("IMPLEMENT ME!")
+    sundays = 0
+    day = 0
+    for year in range(1900, 1901):
+        for month in range(1, 13):
+            for date in range(1, __days_in_month(month, year) + 1):
+                day = (day + 1) % 7
+
+    for year in range(1901, 2001):
+        for month in range(1, 13):
+            for date in range(1, __days_in_month(month, year) + 1):
+                if day == 6 and date == 1:
+                    sundays += 1
+                day = (day + 1) % 7
+    return sundays
+
+def problem_20(): 
+    """
+    n! means n  (n  1)  ...  3  2  1
+
+    For example, 10! = 10  9  ...  3  2  1 = 3628800,
+    and the sum of the digits in the number 10! is 3 + 6 + 2 + 8 + 8 + 0 + 0 = 27.
+
+    Find the sum of the digits in the number 100!
+    """
+    return sum(int(i) for i in str(__factorial(100)))
