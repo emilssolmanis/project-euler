@@ -4,14 +4,22 @@ import math, fractions
 
 # #################### PRIVATE PROPERTY NO TOUCHING ##############################
 
-def __is_prime(prime_list, num):
-    if not prime_list:
+def __is_prime(num, prime_list=None):
+    if num < 2:
+        return False
+    if prime_list is None:
+        for p in __primes_below_gen(num):
+            if num % p == 0:
+                return False
         return True
-    for i in prime_list:
-        if num % i == 0:
-            return False
-        if i > math.sqrt(num):
+    else:
+        if not prime_list:
             return True
+        for i in prime_list:
+            if num % i == 0:
+                return False
+            if i > math.sqrt(num):
+                return True
 
 def __primes_below_gen(num):
     """
@@ -20,9 +28,10 @@ def __primes_below_gen(num):
     """
     res = []
     for i in range(2, num):
-        if __is_prime(res, i):
+        if __is_prime(i, res):
             res.append(i)
             yield i
+
 
 def __diag_from_bottom_left(grid):
     """
@@ -244,7 +253,7 @@ def primes_num_gen(num):
     generated = 0
     i = 2
     while generated < num:
-        if __is_prime(res, i):
+        if __is_prime(i, res):
             res.append(i)
             yield i
             generated += 1
@@ -870,4 +879,24 @@ def problem_27():
     Find the product of the coefficients, a and b, for the quadratic expression that produces the
     maximum number of primes for consecutive values of n, starting with n = 0.
     """
-    raise AttributeError("IMPLEMENT ME!")
+    max_prod = 0
+    max_len = 0
+    max_a = 0
+    max_b = 0
+
+    # TODO: this is just a wild guess to be honest, should that it doesn't go out of bounds somehow
+    prime_list = eratosthenes(10**7)
+    for a in range(-999, 1000):
+        # this can't be negative, because if we start from n = 0, this is the only thing
+        # keeping it above zero
+        for b in range(1000):
+            i = 0
+            while __is_prime(i**2 + i * a + b, prime_list):
+                i += 1
+            if i > max_len:
+                max_prod = a * b
+                max_len = i
+                max_a = a
+                max_b = b
+    print("Max for (a, b) = ({}, {}), length = {}".format(max_a, max_b, max_len))
+    return max_prod
