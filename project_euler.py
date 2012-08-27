@@ -130,6 +130,45 @@ def __alphabetical_value(word):
     """
     return sum(ord(c) - ord('A') + 1 for c in word.upper())
 
+def __as_sum(num_set, n):
+    """
+    Returns whether n can be expressed as a sum of 2 numbers in num_set.
+    """
+    for num in num_set:
+        if num > n // 2:
+            return False
+        elif n - num in num_set:
+            return True
+    return False
+
+def __abundant_below(n):
+    prime_list = eratosthenes(n)
+    perfect = []
+    previous_abundant = []
+    for i in range(1, n):
+        found = False
+        for j in previous_abundant:
+            if i % j == 0:
+                yield i
+                found = True
+                break
+        for j in perfect:
+            if i % j == 0:
+                yield i
+                found = True
+                break
+
+        if found:
+            continue
+
+        s = proper_divisor_sum(i, prime_list)
+
+        if i == s:
+            perfect.append(i)
+        elif i < s:
+            previous_abundant.append(i)
+            yield i
+
 # ############################## PUBLIC TOUCHY TOUCHY ##############################
 
 def fibonacci(num):
@@ -170,19 +209,29 @@ def eratosthenes(num):
             state[j] = False
     return [i for i in range(num) if state[i]]
 
-def factorize(num):
+def factorize(num, prime_list=None):
     """
     Returns a dict() of prime factors and corresponding powers for num.
     """
     factors = {}
-    for divisor in __primes_below_gen(num):
-        if num % divisor == 0:
-            factors[divisor] = 0
+    if prime_list:
+        for divisor in prime_list:
+            if num % divisor == 0:
+                factors[divisor] = 0
             while num % divisor == 0 and num > 1:
                 num = num // divisor
                 factors[divisor] += 1
-        if not num > 1:
-            break
+            if not num > 1:
+                break
+    else:
+        for divisor in __primes_below_gen(num):
+            if num % divisor == 0:
+                factors[divisor] = 0
+            while num % divisor == 0 and num > 1:
+                num = num // divisor
+                factors[divisor] += 1
+            if not num > 1:
+                break
     return factors
 
 def is_palindrome(num):
@@ -239,11 +288,11 @@ def triangle_num(n):
     """
     return (n * (n + 1)) // 2
 
-def num_divisors(n):
+def num_divisors(n, prime_list=None):
     """
     The Divisor function, 'nuff said.
     """
-    factors = factorize(n)
+    factors = factorize(n, prime_list)
     divisors = 0
     for k in sorted(factors):
         v = factors[k]
@@ -251,11 +300,11 @@ def num_divisors(n):
         
     return divisors
 
-def divisors(n):
+def divisors(n, prime_list=None):
     """
     Returns a set of proper divisors for n (including n).
     """
-    factors = factorize(n)
+    factors = factorize(n, prime_list)
     divisors = {1}
     for k in sorted(factors):
         v = factors[k]
@@ -274,6 +323,12 @@ def divisors(n):
         divisors = divisors.union(divs_mults)
     return divisors
     
+def proper_divisor_sum(n, prime_list=None):
+    """
+    Returns the sum of the proper divisors of n.
+    """
+    return sum(divisors(n, prime_list).difference({n}))
+
 def collatz(n):
     res = []
     while n > 1:
@@ -594,9 +649,11 @@ def problem_19():
     Which has twenty-eight, rain or shine.
     And on leap years, twenty-nine.
 
-    A leap year occurs on any year evenly divisible by 4, but not on a century unless it is divisible by 400.
+    A leap year occurs on any year evenly divisible by 4, but not on a century unless it is
+    divisible by 400.
 
-    How many Sundays fell on the first of the month during the twentieth century (1 Jan 1901 to 31 Dec 2000)?
+    How many Sundays fell on the first of the month during the twentieth century (1 Jan 1901 
+    to 31 Dec 2000)?
     """
     sundays = 0
     day = 0
@@ -626,19 +683,22 @@ def problem_20():
 
 def problem_21():
     """
-    Let d(n) be defined as the sum of proper divisors of n (numbers less than n which divide evenly into n).
-    If d(a) = b and d(b) = a, where a != b, then a and b are an amicable pair and each of a and b are called amicable numbers.
+    Let d(n) be defined as the sum of proper divisors of n (numbers less than n which divide 
+    evenly into n).
+    If d(a) = b and d(b) = a, where a != b, then a and b are an amicable pair and each of a and b 
+    are called amicable numbers.
 
-    For example, the proper divisors of 220 are 1, 2, 4, 5, 10, 11, 20, 22, 44, 55 and 110; therefore d(220) = 284. The proper divisors 
-    of 284 are 1, 2, 4, 71 and 142; so d(284) = 220.
+    For example, the proper divisors of 220 are 1, 2, 4, 5, 10, 11, 20, 22, 44, 55 and 110; 
+    therefore d(220) = 284. The proper divisors of 284 are 1, 2, 4, 71 and 142; so d(284) = 220.
 
     Evaluate the sum of all the amicable numbers under 10000.
     """
     amicable = set()
+    prime_list = eratosthenes(10000)
 
     for i in range(2, 10000):
-        d_i = sum(divisors(i).difference({i}))
-        if i != d_i and i == sum(divisors(d_i).difference({d_i})):
+        d_i = proper_divisor_sum(i, prime_list)
+        if i != d_i and i == proper_divisor_sum(d_i):
             amicable.add(i)
             amicable.add(d_i)
 
@@ -662,3 +722,25 @@ def problem_22(filename):
         names.sort()
         alph_scores = sum((i + 1) * __alphabetical_value(names[i]) for i in range(len(names)))
         return alph_scores
+
+def problem_23():
+    """
+    A perfect number is a number for which the sum of its proper divisors is exactly equal to 
+    the number. For example, the sum of the proper divisors of 28 would be 1 + 2 + 4 + 7 + 14 = 28,
+    which means that 28 is a perfect number.
+
+    A number n is called deficient if the sum of its proper divisors is less than n and it is 
+    called abundant if this sum exceeds n.
+
+    As 12 is the smallest abundant number, 1 + 2 + 3 + 4 + 6 = 16, the smallest number that can 
+    be written as the sum of two abundant numbers is 24. By mathematical analysis, it can be 
+    shown that all integers greater than 28123 can be written as the sum of two abundant numbers. 
+    However, this upper limit cannot be reduced any further by analysis even though it is known 
+    that the greatest number that cannot be expressed as the sum of two abundant numbers is 
+    less than this limit.
+
+    Find the sum of all the positive integers which cannot be written as the sum of two abundant
+    numbers.
+    """
+    abundant = set([i for i in __abundant_below(28124)])
+    return sum(i for i in range(1, 28124) if not __as_sum(abundant, i))
