@@ -90,6 +90,21 @@ def __num_to_text(num):
     else:
         return "one thousand"
 
+def __triangle_max_sum(triangle):
+    """
+    Returns the max-sum path in a triangle from the top to the bottom.
+
+    The algorithm uses dynamic programming, it starts from the bottom and calculates the max sum
+    we can get at the next-to-last row, then recurses onto the just obtained smaller triangle.
+    """
+    if (len(triangle) == 1):
+        return triangle[0][0]
+
+    for idx, elem in enumerate(triangle[-2]):
+        triangle[-2][idx] += max(triangle[-1][idx], triangle[-1][idx + 1])
+
+    return __triangle_max_sum(triangle[:-1])
+
 # ############################## PUBLIC TOUCHY TOUCHY ##############################
 
 def fibonacci(num):
@@ -479,3 +494,60 @@ def problem_17():
     of "and" when writing out numbers is in compliance with British usage.
     """
     return sum([len(__num_to_text(i).replace(" ", "").replace("-", "")) for i in range(1, 1001)])
+
+def problem_18(filename):
+    """
+    By starting at the top of the triangle below and moving to adjacent numbers on the row below, the maximum total from top to bottom is 23.
+
+       3
+      7 4
+     2 4 6
+    8 5 9 3
+
+    That is, 3 + 7 + 4 + 9 = 23.
+
+    Find the maximum total from top to bottom of the triangle below:
+
+                  75
+                 95 64
+                17 47 82
+               18 35 87 10
+              20 04 82 47 65
+             19 01 23 75 03 34
+            88 02 77 73 07 63 67
+           99 65 04 28 06 16 70 92
+          41 41 26 56 83 40 80 70 33
+         41 48 72 33 47 32 37 16 94 29
+        53 71 44 65 25 43 91 52 97 51 14
+       70 11 33 28 77 73 17 78 39 68 17 57
+      91 71 52 38 17 14 91 43 58 50 27 29 48
+     63 66 04 68 89 53 67 30 73 16 69 87 40 31
+    04 62 98 27 23 09 70 98 73 93 38 53 60 04 23
+
+    NOTE: As there are only 16384 routes, it is possible to solve this problem by trying every route. However, Problem 67, is the same 
+    challenge with a triangle containing one-hundred rows; it cannot be solved by brute force, and requires a clever method! ;o)
+    """
+    triangle = []
+    for line in open(filename, "r"):
+        triangle.append([int(i) for i in line.split()])
+
+    return __triangle_max_sum(triangle)
+
+def problem_19():
+    """
+    You are given the following information, but you may prefer to do some research for yourself.
+
+    1 Jan 1900 was a Monday.
+
+    Thirty days has September,
+    April, June and November.
+    All the rest have thirty-one,
+    Saving February alone,
+    Which has twenty-eight, rain or shine.
+    And on leap years, twenty-nine.
+
+    A leap year occurs on any year evenly divisible by 4, but not on a century unless it is divisible by 400.
+
+    How many Sundays fell on the first of the month during the twentieth century (1 Jan 1901 to 31 Dec 2000)?
+    """
+    raise AttributeError("IMPLEMENT ME!")
