@@ -61,19 +61,13 @@ def __diag_from_top_left(grid):
     for row_idx in range(1, rows):
         yield [grid[row_idx + offset][cols - offset - 1] for offset in range(min(cols - 1, rows - 1 - row_idx), -1, -1)]
 
-def __factorial(n):
-    """
-    Returns n!
-    """
-    return prod(i for i in range(1, n + 1))
-
 def __num_grid_paths(x, y):
     """
     Return the number of paths without backtracking from the top-left corner to the
     bottom-right corner of an x by y grid.
     """
     # TODO: somewhat suboptimal, we don't need the full factorials
-    return __factorial(x + y) // (__factorial(y) * __factorial(x))
+    return factorial(x + y) // (factorial(y) * factorial(x))
 
 def __num_to_text(num):
     """
@@ -237,6 +231,23 @@ def __coin_permutations(nominals, target_sum):
 
     return permutations
 
+def __is_mult(perm):
+    """
+    Checks whether the given 
+    """
+    s = str().join(str(i) for i in perm)
+
+    # maintain two indices -- one that splits off factor_1 from factor_2
+    # and another one that splits factor_2 and product
+
+    # for end - 1 to 
+    for p_idx in range(len(s) - 1, 1, -1):
+        for f2_idx in range(p_idx - 1, 0, -1):
+            if int(s[:f2_idx]) * int(s[f2_idx:p_idx]) == int(s[p_idx:]):
+                return (True, int(s[:f2_idx]), int(s[f2_idx:p_idx]), int(s[p_idx:]))
+
+    return (False, 0, 0, 0)
+
 # ############################## PUBLIC TOUCHY TOUCHY ##############################
 
 def fibonacci(num=None):
@@ -319,6 +330,12 @@ def is_palindrome(num):
     back = digits[-split_idx:]
     back.reverse()
     return front == back
+
+def factorial(n):
+    """
+    Returns n!
+    """
+    return prod(i for i in range(1, n + 1))
 
 def prod(nums):
     """
@@ -734,7 +751,7 @@ def problem_20():
 
     Find the sum of the digits in the number 100!
     """
-    return sum(int(i) for i in str(__factorial(100)))
+    return sum(int(i) for i in str(factorial(100)))
 
 def problem_21():
     """
@@ -1028,4 +1045,14 @@ def problem_32():
 
     HINT: Some products can be obtained in more than one way so be sure to only include it once in your sum.
     """
-    raise AttributeError("IMPLEMENT ME!")
+    # There's 9! = 362880 permutations of [1..9], if there's a linear (or near-linear) way to check whether a permutation
+    # can be the identity, that should suffice for a brute solution.
+    # TODO: obviously only certain digit-ed numbers need to be checked, e.g., a 1-digit by 1-digit product is max 2-digits.
+    prod_set = set()
+    perms = __lex_permutations({i for i in range(1, 10)})
+    for perm in perms:
+        mult, f1, f2, p = __is_mult(perm)
+        if mult:
+            prod_set.add(p)
+
+    return sum(prod_set)
