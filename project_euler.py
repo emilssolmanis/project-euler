@@ -221,6 +221,22 @@ def __reciprocal_length(denominator):
     else:
         return __order(10, denominator)
 
+def __coin_permutations(nominals, target_sum):
+    """
+    Returns the possible ways to get target_sum as a sum of an arbitrary number of elements in nominals -- that is,
+    the possible partitions of target_sum. If compositions are needed, change "nominals[idx:]" to nominals
+    """
+    permutations = []
+    if target_sum <= 0:
+        return []
+    for idx, coin in enumerate(sorted(nominals)):
+        if coin == target_sum:
+            permutations.append([coin])
+        for perm in __coin_permutations(nominals[idx:], target_sum - coin):
+            permutations.append([coin] + perm)
+
+    return permutations
+
 # ############################## PUBLIC TOUCHY TOUCHY ##############################
 
 def fibonacci(num=None):
@@ -988,3 +1004,28 @@ def problem_30():
         if i == sum(pows[int(j)] for j in str(i)):
             s += i
     return s
+
+def problem_31():
+    """
+    In England the currency is made up of pound, £, and pence, p, and there are eight coins in general circulation:
+    1p, 2p, 5p, 10p, 20p, 50p, £1 (100p) and £2 (200p).
+
+    It is possible to make £2 in the following way:
+    1*£1 + 1*50p + 2*20p + 1*5p + 1*2p + 3*1p
+
+    How many different ways can £2 be made using any number of coins?
+    """
+    return len(__coin_permutations([1, 2, 5, 10, 20, 50, 100, 200], 200))
+
+def problem_32():
+    """
+    We shall say that an n-digit number is pandigital if it makes use of all the digits 1 to n exactly once; for example, the 5-digit 
+    number, 15234, is 1 through 5 pandigital.
+
+    The product 7254 is unusual, as the identity, 39 * 186 = 7254, containing multiplicand, multiplier, and product is 1 through 9 pandigital.
+
+    Find the sum of all products whose multiplicand/multiplier/product identity can be written as a 1 through 9 pandigital.
+
+    HINT: Some products can be obtained in more than one way so be sure to only include it once in your sum.
+    """
+    raise AttributeError("IMPLEMENT ME!")
