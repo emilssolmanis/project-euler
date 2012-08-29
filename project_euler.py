@@ -328,16 +328,11 @@ def factorize(num, prime_list=None):
                 break
     return factors
 
-def is_palindrome(num):
+def is_palindrome(s):
     """
-    Checks whether num is a palindrome.
+    Checks whether s is a palindrome.
     """
-    digits = list(str(num))
-    split_idx = len(digits) // 2
-    front = digits[:split_idx]
-    back = digits[-split_idx:]
-    back.reverse()
-    return front == back
+    return not s or (s[0] == s[-1] and is_palindrome(s[1:-1]))
 
 def factorial(n):
     """
@@ -495,7 +490,7 @@ def problem_4():
     first, second = 0, 0
     for i in range(999, 99, -1):
         for j in range(999, 99, -1):
-            if is_palindrome(i * j) and i * j > first * second:
+            if is_palindrome(str(i * j)) and i * j > first * second:
                 first, second = i, j
     return ((first, second), first * second)
 
@@ -1138,3 +1133,13 @@ def problem_35():
         num += all_primes
 
     return num
+
+def problem_36():
+    """
+    The decimal number, 585 = 1001001001[2] (binary), is palindromic in both bases.
+
+    Find the sum of all numbers, less than one million, which are palindromic in base 10 and base 2.
+
+    (Please note that the palindromic number, in either base, may not include leading zeros.)
+    """
+    return sum(i for i in range(10**6) if is_palindrome(str(i)) and is_palindrome(bin(i)[2:]))
