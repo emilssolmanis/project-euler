@@ -16,10 +16,10 @@ def __is_prime(num, prime_list=None):
         if not prime_list:
             return True
         for i in prime_list:
-            if num % i == 0:
-                return False
             if i > math.sqrt(num):
                 return True
+            if num % i == 0:
+                return False
 
 def __primes_below_gen(num):
     """
@@ -233,7 +233,7 @@ def __coin_permutations(nominals, target_sum):
 
 def __is_mult(perm):
     """
-    Checks whether the given 
+    Checks whether the given list of numbers can be split into consecutive parts of factor | factor | product.
     """
     s = str().join(str(i) for i in perm)
 
@@ -247,6 +247,14 @@ def __is_mult(perm):
                 return (True, int(s[:f2_idx]), int(s[f2_idx:p_idx]), int(s[p_idx:]))
 
     return (False, 0, 0, 0)
+
+def __rotations(n):
+    """
+    Generates circular rotations of n.
+    """
+    s = str(n)
+    for i in range(len(s)):
+        yield int(s[i:] + s[:i])
 
 # ############################## PUBLIC TOUCHY TOUCHY ##############################
 
@@ -528,7 +536,7 @@ def problem_7():
     """
     return [i for i in primes_num_gen(10000)][-1]
 
-def problem_8(filename):
+def problem_8(filename="problem_8.dat"):
     """
     Find the greatest product of five consecutive digits in the 1000-digit number given in
     the file.
@@ -560,7 +568,7 @@ def problem_10():
     """
     return sum(eratosthenes(2*10**6))
 
-def problem_11(filename):
+def problem_11(filename="problem_11.dat"):
     """
     In the 2020 grid below, four numbers along a diagonal line have been marked in red.
 
@@ -606,7 +614,7 @@ def problem_12():
     
     return (i, triangle_num(i))
 
-def problem_13(filename):
+def problem_13(filename="problem_13.dat"):
     """
     Work out the first ten digits of the sum of the one-hundred 50-digit numbers in the
     given file.
@@ -670,7 +678,7 @@ def problem_17():
     """
     return sum([len(__num_to_text(i).replace(" ", "").replace("-", "")) for i in range(1, 1001)])
 
-def problem_18(filename):
+def problem_18(filename="problem_18.dat"):
     """
     By starting at the top of the triangle below and moving to adjacent numbers on the row below, the maximum total from top to bottom is 23.
 
@@ -776,7 +784,7 @@ def problem_21():
 
     return sum(amicable)
 
-def problem_22(filename):
+def problem_22(filename="problem_22.dat"):
     """
     Using names.txt (right click and 'Save Link/Target As...'), a 46K text file containing
     over five-thousand first names, begin by sorting it into alphabetical order. Then 
@@ -1109,3 +1117,24 @@ def problem_34():
         if i == sum(factorials[int(j)] for j in str(i)):
             s += i
     return s
+
+def problem_35():
+    """
+    The number, 197, is called a circular prime because all rotations of the digits: 197, 971, and 719,
+    are themselves prime.
+
+    There are thirteen such primes below 100: 2, 3, 5, 7, 11, 13, 17, 31, 37, 71, 73, 79, and 97.
+
+    How many circular primes are there below one million?
+    """
+    primes = eratosthenes(10**6)
+    num = 0
+    for p in primes:
+        all_primes = True
+        for i in __rotations(p):
+            if not __is_prime(i, primes):
+                all_primes = False
+                break
+        num += all_primes
+
+    return num
