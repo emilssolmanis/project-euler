@@ -1013,11 +1013,11 @@ def problem_30():
     # 10 = 10^1, 100 = 10^2. Obviously, 10^n grows faster than 9^5n. We can get the equality point (and therefore, the
     # sum's upper bound) by solving 10^n = 59049n for n.
     # n ~ 0.0000169357; n ~ 5.51257
-    # Therefore, ONLY numbers smaller than 10^5.51257 can be written as the sum of their digits. For practical purposes,
-    # we'll assume n = 5.513, which is slightly larger.
+    # Therefore, ONLY numbers smaller than 10^5.51257 can be written as the sum of their digits. The precise number is
+    # k * 9^5, but we can get k as the number of digits in 10^5.51257, which is obviously 6.
 
     s = 0
-    for i in range(2, math.ceil(10**5.513)):
+    for i in range(2, 6 * pows[9]):
         if i == sum(pows[int(j)] for j in str(i)):
             s += i
     return s
@@ -1087,4 +1087,25 @@ def problem_33():
                     denominator *= new_denominator
 
     return denominator // fractions.gcd(numerator, denominator)
-    
+
+def problem_34():
+    """
+    145 is a curious number, as 1! + 4! + 5! = 1 + 24 + 120 = 145.
+
+    Find the sum of all numbers which are equal to the sum of the factorial of their digits.
+
+    Note: as 1! = 1 and 2! = 2 are not sums they are not included.
+    """
+    factorials = [factorial(i) for i in range(10)]
+
+    # Very similar to problem 30, there's an upper bound to calculate to. The max possible sum is 9! + 9! ... = n * 9!
+    # This is upper bounded by 10^n somewhere (because 1 * 9! > 10^1, 2 * 9! > 10^2, etc., but 10^n is exponential,
+    # while n9! is linear.
+    # Solve 10^n = 362880n for n
+    # n ~ 2.75575e-6; n ~ 6.36346
+
+    s = 0
+    for i in range(10, 7 * factorials[9]):
+        if i == sum(factorials[int(j)] for j in str(i)):
+            s += i
+    return s
