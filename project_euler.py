@@ -256,6 +256,22 @@ def __rotations(n):
     for i in range(len(s)):
         yield int(s[i:] + s[:i])
 
+def __is_truncatable(n, prime_list=None):
+    """
+    A number is "truncatable" if it is prime, and it remains prime if you truncate it
+    from any side. E. g., 3797, 797, 97, and 7. Similarly, right to left: 3797, 379, 
+    37, and 3.
+    """
+    if not __is_prime(n, prime_list):
+        return False
+
+    s = str(n)
+    for i in range(1, len(s)):
+        if not __is_prime(int(s[i:]), prime_list) or not __is_prime(int(s[:-i]), prime_list):
+            return False
+
+    return True
+
 # ############################## PUBLIC TOUCHY TOUCHY ##############################
 
 def fibonacci(num=None):
@@ -600,14 +616,16 @@ def problem_12():
 
     What is the value of the first triangle number to have over five hundred divisors?
     """
-    # TODO: reuse the prime list used in the factorization here
-    # for decent performance, but for now, fuck it, this works somewhat reasonably in
-    # under 2 mins. With the prime list reuse should be a few seconds.
+    # TODO: consider case that 10**5 might not be enough, but the generator thing
+    # is just too damn slow
+
+    primes = eratosthenes(10**5)
+
     i = 1
-    while (num_divisors(triangle_num(i)) <= 500):
+    while (num_divisors(triangle_num(i), primes) <= 500):
         i += 1
     
-    return (i, triangle_num(i))
+    return triangle_num(i)
 
 def problem_13(filename="problem_13.dat"):
     """
@@ -1143,3 +1161,27 @@ def problem_36():
     (Please note that the palindromic number, in either base, may not include leading zeros.)
     """
     return sum(i for i in range(10**6) if is_palindrome(str(i)) and is_palindrome(bin(i)[2:]))
+
+def problem_37():
+    """
+    The number 3797 has an interesting property. Being prime itself, it is possible to 
+    continuously remove digits from left to right, and remain prime at each stage: 3797, 797, 
+    97, and 7. Similarly we can work from right to left: 3797, 379, 37, and 3.
+
+    Find the sum of the only eleven primes that are both truncatable from left to right and 
+    right to left.
+
+    NOTE: 2, 3, 5, and 7 are not considered to be truncatable primes.
+    """
+    primes = eratosthenes(10**6)
+    s = 0
+    found = 0
+    for p in primes:
+        if __is_truncatable(p, primes):
+            found += 1
+            s += p
+
+    if found - 4 != 11:
+        raise ValueError("Should have found 11 trucatable primes")
+
+    return s - sum([2, 3, 5, 7])
