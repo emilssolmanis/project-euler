@@ -1185,3 +1185,49 @@ def problem_37():
         raise ValueError("Should have found 11 trucatable primes")
 
     return s - sum([2, 3, 5, 7])
+
+def problem_38():
+    """
+    Take the number 192 and multiply it by each of 1, 2, and 3:
+
+    192 × 1 = 192
+    192 × 2 = 384
+    192 × 3 = 576
+
+    By concatenating each product we get the 1 to 9 pandigital, 192384576. We will call 
+    192384576 the concatenated product of 192 and (1,2,3)
+
+    The same can be achieved by starting with 9 and multiplying by 1, 2, 3, 4, and 5, giving 
+    the pandigital, 918273645, which is the concatenated product of 9 and (1,2,3,4,5).
+
+    What is the largest 1 to 9 pandigital 9-digit number that can be formed as the 
+    concatenated product of an integer with (1,2, ... , n) where n > 1?
+    """
+
+    # A 9-digit number can be formed in several ways. We can observe, that it is impossible
+    # for n to be larger than 9. The smallest possible 9-digit pandigital we can obtain is
+    # 1 * (1, 2, .. , 9) = 123456789
+    # As we increase the first factor, n decreases, because, e.g., multiplying a 2 digit number
+    # by a 1 digit number yields a 2 or 3 digit number. That way, n drops to 4 (also, at least
+    # one of the products is a 3 digit number, because 1 digit numbers are impossible to
+    # obtain at this point). Taking a 3 digit constant, we get 3 or 4 digit products, again,
+    # n drops to 3.
+    # Hereby, we have proved that the constant is upper-bounded by the first 5-digit 
+    # number 10000, because that is guaranteed to produce a 5 digit product and we need 
+    # a 4 digit beast to get the 9 digit pandigital.
+    # Since we need to find the LARGEST pandigital number, we start from 
+
+    # Oh, btw, it's not guaranteed that just maxing the front constant guarantees the 
+    # largest pandigital, so don't just return the first match
+
+    res = 0
+    for c in range(9999, -1, -1):
+        s = str()
+        i = 1
+        while len(s) < 9:
+            s += str(c * i)
+            i += 1
+        
+        if len(s) == 9 and len(set(s).difference({'0'})) == 9:
+            res = max(int(s), res)
+    return res
