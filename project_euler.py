@@ -144,6 +144,18 @@ def __as_sum(num_set, n):
             return True
     return False
 
+def __as_sum_full(num_set, n):
+    """
+    Returns a list of possible additives to obtain n from numbers in num_set.
+    """
+    res = set()
+    for num in num_set:
+        if n - num in num_set:
+            if n - num >= num:
+                res.add((num, n - num))
+
+    return res
+
 def __abundant_below(n):
     prime_list = eratosthenes(n)
     perfect = []
@@ -1231,3 +1243,34 @@ def problem_38():
         if len(s) == 9 and len(set(s).difference({'0'})) == 9:
             res = max(int(s), res)
     return res
+
+def problem_39():
+    """
+    If p is the perimeter of a right angle triangle with integral length sides, {a,b,c}, 
+    there are exactly three solutions for p = 120.
+
+    {20,48,52}, {24,45,51}, {30,40,50}
+
+    For which value of p ≤ 1000, is the number of solutions maximised?
+    """
+    
+    sq = [i**2 for i in range(501)]
+    sq_set = set(sq).difference({0})
+
+    perimeters = [0 for _ in range(1001)]
+
+    # A single side cannot be > 500 if the perimeters are supposed to be below 1000
+    for i in range(2, 501):
+        additives = __as_sum_full(sq_set, sq[i])
+        for a, b in additives:
+            p = isqrt(a) + isqrt(b) + i
+            if p <= 1000:
+                perimeters[p] += 1
+
+    max_idx, max_val = 0, 0
+    for i, v in enumerate(perimeters):
+        if v > max_val:
+            max_idx = i
+            max_val = v
+            
+    return max_idx
