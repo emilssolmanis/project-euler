@@ -1047,7 +1047,7 @@ def problem_32():
     """
     # There's 9! = 362880 permutations of [1..9], if there's a linear (or near-linear) way to check whether a permutation
     # can be the identity, that should suffice for a brute solution.
-    # TODO: obviously only certain digit-ed numbers need to be checked, e.g., a 1-digit by 1-digit product is max 2-digits.
+    # TODO: obviously only certain digit-ed numbers need to be checked, e.g., a 1-digit by 1-digit product is max 2-digits, 
     prod_set = set()
     perms = __lex_permutations({i for i in range(1, 10)})
     for perm in perms:
@@ -1056,3 +1056,35 @@ def problem_32():
             prod_set.add(p)
 
     return sum(prod_set)
+
+def problem_33():
+    """
+    The fraction 49/98 is a curious fraction, as an inexperienced mathematician in attempting to simplify it may incorrectly believe 
+    that 49/98 = 4/8, which is correct, is obtained by cancelling the 9s.
+
+    We shall consider fractions like, 30/50 = 3/5, to be trivial examples.
+
+    There are exactly four non-trivial examples of this type of fraction, less than one in value, and containing two digits in the 
+    numerator and denominator.
+
+    If the product of these four fractions is given in its lowest common terms, find the value of the denominator.
+    """
+    numerator, denominator = 1, 1
+    for i in range(10, 99):
+        for j in range(i + 1, 100):
+            common_digits = set(str(i)).intersection(set(str(j)))
+            gcd_ij = fractions.gcd(i, j)
+            if gcd_ij > 1 and len(common_digits) and i % 10 != 0 and j % 10 != 0:
+                # although there can only be 0 or 1 digits in common, this is easier for now
+                digit = [_ for _ in common_digits][0]
+
+                new_numerator = int(str(i).replace(digit, "", 1))
+                new_denominator = int(str(j).replace(digit, "", 1))
+                gcd_new = fractions.gcd(new_numerator, new_denominator)
+                
+                if new_numerator // gcd_new == i // gcd_ij and new_denominator // gcd_new == j // gcd_ij:
+                    numerator *= new_numerator
+                    denominator *= new_denominator
+
+    return denominator // fractions.gcd(numerator, denominator)
+    
