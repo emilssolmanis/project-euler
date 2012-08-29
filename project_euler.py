@@ -1274,3 +1274,49 @@ def problem_39():
             max_val = v
             
     return max_idx
+
+def problem_40():
+    """
+    An irrational decimal fraction is created by concatenating the positive integers:
+
+    0.123456789101112131415161718192021...
+
+    It can be seen that the 12^th digit of the fractional part is 1.
+
+    If d[n] represents the n^th digit of the fractional part, find the value of the following
+    expression.
+
+    d[1] × d[10] × d[100] × d[1000] × d[10000] × d[100000] × d[1000000]
+    """
+    # TODO: do it the right way. This takes 10e6 bytes of memory, that can easily be avoided
+    s = str()
+    i = 1
+    while len(s) < 1000000:
+        s += str(i)
+        i += 1
+
+    return int(s[0]) * int(s[9]) * int(s[99]) * int(s[999]) * int(s[9999]) * int(s[99999]) * int(s[999999])
+
+def problem_41():
+    """
+    We shall say that an n-digit number is pandigital if it makes use of all the digits 1 to n exactly
+    once. For example, 2143 is a 4-digit pandigital and is also prime.
+
+    What is the largest n-digit pandigital prime that exists?
+    """
+    # By simple divisibility rules we can deduce that 8 and 9 digit pandigitals are ALL not
+    # prime, because sum(1..9) == 45, which divides by 9, and sum(1..8) == 36, which divides
+    # by 3 and 9.
+    # By similar logic, we get that the only viable options for primes are 7 and 4 digit pandigitals
+    # this leaves us with 4! + 7! = 5064 permutations to check, which is ridiculous...
+
+    primes = eratosthenes(isqrt(7654321) + 2)
+    for p in reversed(__lex_permutations({i for i in range(1, 8)})):
+        num = int(str().join(str(i) for i in p))
+        if __is_prime(num, primes):
+            return num
+
+    for p in reversed(__lex_permutations({i for i in range(1, 5)})):
+        num = int(str().join(str(i) for i in p))
+        if __is_prime(num, primes):
+            return num
