@@ -199,6 +199,24 @@ def __lex_permutations(elem_set):
 
     return permutations
 
+def __combinations(elem_set, k):
+    """
+    Returns all possible outcomes of elem_set choose k.
+    """
+    if not k or not elem_set:
+        return []
+
+    res = []
+    elem_list = sorted(elem_set)
+
+    for idx, elem in enumerate(elem_list):
+        if k == 1:
+            res.append({elem})
+        for c in __combinations(elem_list[idx+1:], k - 1):
+            res.append({elem}.union(c))
+
+    return res
+
 def __order(a, n):
     """
     Returns the order of a modulo n.
@@ -1347,3 +1365,30 @@ def problem_42(filename="problem_42.dat"):
             i += 1
             
         return sum(score in triangle_nums for score in alph_scores)
+
+def problem_43():
+    """
+    The number, 1406357289, is a 0 to 9 pandigital number because it is made up of each of the digits 0 to 9 in some order, 
+    but it also has a rather interesting sub-string divisibility property.
+
+    Let d1 be the 1st digit, d2 be the 2nd digit, and so on. In this way, we note the following:
+
+    d2d3d4 = 406 is divisible by 2
+    d3d4d5 = 063 is divisible by 3
+    d4d5d6 = 635 is divisible by 5
+    d5d6d7 = 357 is divisible by 7
+    d6d7d8 = 572 is divisible by 11
+    d7d8d9 = 728 is divisible by 13
+    d8d9d10 = 289 is divisible by 17
+    Find the sum of all 0 to 9 pandigital numbers with this property.
+    """
+    # Overall, there's 10 choose 3 = 120 triplets, 3! permutations for each triplet. Since we also have to choose
+    # a digit for d1, we can do that in 9 choose 1 = 9 ways.
+    # Then there are the obvious (easily testable) restrictions for some triplets: 
+    # d4 has to be pair (for d2d3d4 ro be divisible by 2)
+    # d3 + d4 + d5 has to be divisible by 3
+    # d6 has to be 0 or 5 (for d4d5d6 to be divisible by 5)
+    # 
+    # There are divisibility tests for 7, 11, 13 and 17, but the given ones should already reduce the 
+    # possibilities to a small enough set for brute force to be viable.
+    raise AttributeError("IMPLEMENT ME!")
