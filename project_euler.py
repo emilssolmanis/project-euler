@@ -1320,3 +1320,30 @@ def problem_41():
         num = int(str().join(str(i) for i in p))
         if __is_prime(num, primes):
             return num
+
+def problem_42(filename="problem_42.dat"):
+    """
+    The nth term of the sequence of triangle numbers is given by, tn = ½n(n+1); so the first ten triangle numbers are:
+
+    1, 3, 6, 10, 15, 21, 28, 36, 45, 55, ...
+
+    By converting each letter in a word to a number corresponding to its alphabetical position and adding these values 
+    we form a word value. For example, the word value for SKY is 19 + 11 + 25 = 55 = t10. If the word value is a triangle
+    number then we shall call the word a triangle word.
+
+    Using words.txt (right click and 'Save Link/Target As...'), a 16K text file containing nearly two-thousand 
+    common English words, how many are triangle words?
+    """
+    res = 0
+    with open(filename, "r") as f:
+        words = f.readline().replace("\"", "").split(',')
+        alph_scores = [__alphabetical_value(w) for w in words]
+        max_score = max(alph_scores)
+        triangle_nums = set()
+
+        i = 1
+        while triangle_num(i) < max_score:
+            triangle_nums.add(triangle_num(i))
+            i += 1
+            
+        return sum(score in triangle_nums for score in alph_scores)
