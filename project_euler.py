@@ -1368,8 +1368,9 @@ def problem_42(filename="problem_42.dat"):
 
 def problem_43():
     """
-    The number, 1406357289, is a 0 to 9 pandigital number because it is made up of each of the digits 0 to 9 in some order, 
-    but it also has a rather interesting sub-string divisibility property.
+    The number, 1406357289, is a 0 to 9 pandigital number because it is made up of each of the 
+    digits 0 to 9 in some order, but it also has a rather interesting sub-string divisibility
+    property.
 
     Let d1 be the 1st digit, d2 be the 2nd digit, and so on. In this way, we note the following:
 
@@ -1382,8 +1383,20 @@ def problem_43():
     d8d9d10 = 289 is divisible by 17
     Find the sum of all 0 to 9 pandigital numbers with this property.
     """
-    # Overall, there's 10 choose 3 = 120 triplets, 3! permutations for each triplet. Since we also have to choose
-    # a digit for d1, we can do that in 9 choose 1 = 9 ways.
+    def __div_perms(two_digit, digit_set, divisible_by):
+        """
+        Generate 3-digit numbers from two_digit and an additional digit in digit_set
+        that are divisible by divisible_by
+        """
+        for digit in digit_set:
+            new_num = int(str(two_digit) + str(digit))
+            if new_num % divisible_by == 0:
+                yield digit
+
+    res = 0
+
+    # Overall, there's 10 choose 3 = 120 triplets, 3! permutations for each triplet. Since we 
+    # also have to choose a digit for d1, we can do that in 9 choose 1 = 9 ways.
     # Then there are the obvious (easily testable) restrictions for some triplets: 
     # d4 has to be pair (for d2d3d4 ro be divisible by 2)
     # d3 + d4 + d5 has to be divisible by 3
@@ -1391,4 +1404,40 @@ def problem_43():
     # 
     # There are divisibility tests for 7, 11, 13 and 17, but the given ones should already reduce the 
     # possibilities to a small enough set for brute force to be viable.
-    raise AttributeError("IMPLEMENT ME!")
+    digits = {i for i in range(10)}
+    triplets = __combinations(digits, 3)
+    
+    # candidates for d3, d4, d5
+    by_3 = [c for c in triplets if sum(c) % 3 == 0]
+    
+    # since d4 has to be pair, we can eliminate triplets with all odd numbers
+    by_3 = [s for s in by_3 if s.intersection({0, 2, 4, 6, 8})]
+
+    # TODO: this is fugly, the loops could & should probably be refactored into one
+    # separate, that just finds the i-th number of the sequence as needed
+
+    for c in by_3:
+        for p in __lex_permutations(c):
+            # only if d4 is pair
+            if p[1] % 2 == 0:
+                # at this point, d3, d4 and d5 are fixed, but d6 can only be
+                # 0 or 5, so just fix d6 to either and work both cases.
+                # With 4 numbers fixed, this theoretically leaves us 
+                # 6 choose 3 = 20 options, but since we have ALREADY chosen
+                # d3, d4, d5 and d6, and d5d6d7 has to be divisible by 7, we just 
+                # need to find our available options, then, similarly, do the same
+                # for d6d7d8 to be divisible by 11, yadda yadda. In the end, if we even
+                # get there, slap the remaining two elements up in the front, permute 
+                # them and live happily ever after
+                for d6 in {0, 5}.difference(p):
+                    for d7 in __div_perms(str(p[2]) + str(d6), digits.difference(p + [d6]), 7):
+                        for d8 in __div_perms(str(d6) + str(d7), digits.difference(p + [d6, d7]), 11):
+                            for d9 in __div_perms(str(d7) + str(d8), digits.difference(p + [d6, d7, d8]), 13):
+
+                                for d10 in __div_perms(str(d8) + str(d9), digits.difference(p + [d6, d7, d8, d9]), 17):
+                                    for front in __lex_permutations(digits.difference(p + [d6, d7, d8, d9, d10])):
+                                        # first digit can't be zero
+                                        if front[0]:
+                                            res += int(str().join(str(i) for i in front + p + [d6, d7, d8, d9, d10]))
+
+    return res
