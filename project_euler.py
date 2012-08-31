@@ -538,7 +538,7 @@ def problem_4():
         for j in range(999, 99, -1):
             if is_palindrome(str(i * j)) and i * j > first * second:
                 first, second = i, j
-    return ((first, second), first * second)
+    return first * second
 
 def problem_5():
     """
@@ -980,7 +980,6 @@ def problem_27():
                 max_len = i
                 max_a = a
                 max_b = b
-    print("Max for (a, b) = ({}, {}), length = {}".format(max_a, max_b, max_len))
     return max_prod
 
 def problem_28():
