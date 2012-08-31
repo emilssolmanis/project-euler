@@ -686,7 +686,10 @@ def problem_14():
 
     NOTE: Once the chain starts the terms are allowed to go above one million.
     """
-    # TODO: takes a while. Since it's a sequence, it overlaps, that can easily be reused
+
+    # TODO: takes a while. Since it's a sequence, it overlaps, that can easily be reused,
+    #       but they can diverge at some points. A trie is probably the most appropriate thing
+    #       to use.
     collatz_lens = [len(collatz(i)) for i in range(1000000)]
     return collatz_lens.index(max(collatz_lens))
 
