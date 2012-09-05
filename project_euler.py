@@ -1490,11 +1490,22 @@ def problem_44():
 
     pentagon_nums = []
     i = 1
+    idx1, idx2 = 0, float("inf")
     while True:
         curr_pent = pentagon_num(i)
         additives = __as_sum_full(pentagon_nums, curr_pent)
-        if additives:
-            pass
+#        if additives:
+        for j1, j2 in additives:
+            # check all pairs, whether their diff is pentagonal
+#            print("Checking whether {} - {} = {} is pent".format(j2, j1, abs(j2 - j1)))
+            if __is_pent_number(abs(j2 - j1)):
+                new_idx1, new_idx2 = __reverse_pent_number(j1), __reverse_pent_number(j2)
+                if abs(new_idx1 - new_idx2) < abs(idx1 - idx2):
+                    idx1, idx2 = new_idx1, new_idx2
+                    print("Found indices ({} {})".format(idx1, idx2))
 
         pentagon_nums.append(curr_pent)
+        if i % 100 == 0:
+            print("Done with {}".format(i))
         i += 1
+        
