@@ -1486,9 +1486,24 @@ def problem_44():
     Find the pair of pentagonal numbers, Pj and Pk, for which their sum and difference
     is pentagonal and D = |Pk - Pj| is minimised; what is the value of D?
     """
-    raise AttributeError("IMPLEMENT ME!")
+    # The difference between each consecutive member of the list is
+    # 3n + 1. This can be seen by performing a simple polynomial subtraction
+    # (n+1)(3(n+1) - 1)/2 - n(3n - 1)/2 = 3n + 1.
+    #
+    # Therefore, any pentagonal number that has the form of 3n + 1 CAN be expressed
+    # as a difference of two consecutive terms.
 
-    pentagon_nums = []
+    # Every pentagonal number is a sum of all differences up to it, e.g.,
+    # P_4 = 3*0+1 + 3*1+1 + 3*2+1 + 3*3+1 = 3*(0 + 1 + 2 + 3) + 4 = 3 * 6 + 4 = 22
+    # P_5 = 3 * (0 + 1 + .. + 4) + 5 = 3 * 10 + 5 = 35
+    # We can easily notice that (0 + .. + n) is a triangle number
+    # and extract this new formula of 
+    # P_n = 3 * T_{n-1} + n = 3 * T_n - 2n
+    # It is proved by opening up the Pentagon formula and adding in a (+3n - 3n) part.
+
+#    raise AttributeError("IMPLEMENT ME!")
+
+    pentagon_nums = set()
     i = 1
     idx1, idx2 = 0, float("inf")
     while True:
@@ -1504,8 +1519,9 @@ def problem_44():
                     idx1, idx2 = new_idx1, new_idx2
                     print("Found indices ({} {})".format(idx1, idx2))
 
-        pentagon_nums.append(curr_pent)
+#        large_half = pentagon_num(math.ceil(__reverse_pent_number(curr_pent / 2)))
+#        small_half = pentagon_num(math.ceil(__reverse_pent_number(curr_pent / 2)) - 1)
+        pentagon_nums.add(curr_pent)
         if i % 100 == 0:
             print("Done with {}".format(i))
         i += 1
-        
