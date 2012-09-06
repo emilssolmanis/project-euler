@@ -1505,17 +1505,25 @@ def problem_44():
 
     pentagon_nums = set()
     i = 1
-    idx1, idx2 = 0, float("inf")
+    min_diff = float("inf")
     while True:
         curr_pent = pentagon_num(i)
         additives = __as_sum_full(pentagon_nums, curr_pent)
         for j1, j2 in additives:
             # check all pairs, whether their diff is pentagonal
             if __is_pent_number(abs(j2 - j1)):
-                new_idx1, new_idx2 = __reverse_pent_number(j1), __reverse_pent_number(j2)
-                if abs(new_idx1 - new_idx2) < abs(idx1 - idx2):
-                    idx1, idx2 = new_idx1, new_idx2
+                if abs(j1 - j2) < min_diff:
+                    min_diff = abs(j1 - j2)
                     return abs(j1 - j2)
+
+        # These are the two consecutive pentagonals that sum up to the current pentagonal
+        # number (or larger). This is the minimum difference we could have, so when this
+        # outgrows the currently found min_diff, we know there can be no smaller D
+        # However, this takes FOREVER, so screw it for now
+#        large_half = pentagon_num(math.ceil(__reverse_pent_number(curr_pent / 2)))
+#        small_half = pentagon_num(math.ceil(__reverse_pent_number(curr_pent / 2)) - 1)
+#        if min_diff < abs(large_half - small_half):
+#            return min_diff
 
         pentagon_nums.add(curr_pent)
         i += 1
