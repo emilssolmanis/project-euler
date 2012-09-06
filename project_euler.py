@@ -1486,6 +1486,8 @@ def problem_44():
     Find the pair of pentagonal numbers, Pj and Pk, for which their sum and difference
     is pentagonal and D = |Pk - Pj| is minimised; what is the value of D?
     """
+    # TODO: the first matching pair actually works, but no idea why
+
     # The difference between each consecutive member of the list is
     # 3n + 1. This can be seen by performing a simple polynomial subtraction
     # (n+1)(3(n+1) - 1)/2 - n(3n - 1)/2 = 3n + 1.
@@ -1501,27 +1503,19 @@ def problem_44():
     # P_n = 3 * T_{n-1} + n = 3 * T_n - 2n
     # It is proved by opening up the Pentagon formula and adding in a (+3n - 3n) part.
 
-#    raise AttributeError("IMPLEMENT ME!")
-
     pentagon_nums = set()
     i = 1
     idx1, idx2 = 0, float("inf")
     while True:
         curr_pent = pentagon_num(i)
         additives = __as_sum_full(pentagon_nums, curr_pent)
-#        if additives:
         for j1, j2 in additives:
             # check all pairs, whether their diff is pentagonal
-#            print("Checking whether {} - {} = {} is pent".format(j2, j1, abs(j2 - j1)))
             if __is_pent_number(abs(j2 - j1)):
                 new_idx1, new_idx2 = __reverse_pent_number(j1), __reverse_pent_number(j2)
                 if abs(new_idx1 - new_idx2) < abs(idx1 - idx2):
                     idx1, idx2 = new_idx1, new_idx2
-                    print("Found indices ({} {})".format(idx1, idx2))
+                    return abs(j1 - j2)
 
-#        large_half = pentagon_num(math.ceil(__reverse_pent_number(curr_pent / 2)))
-#        small_half = pentagon_num(math.ceil(__reverse_pent_number(curr_pent / 2)) - 1)
         pentagon_nums.add(curr_pent)
-        if i % 100 == 0:
-            print("Done with {}".format(i))
         i += 1
