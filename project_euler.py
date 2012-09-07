@@ -1655,3 +1655,67 @@ def problem_49():
             for second in perm[idx+1:-1]:
                 if 2 * second - first in perm and first != 1487 and second != 4817:
                     return "".join([str(first), str(second), str(2 * second - first)])
+
+def problem_50():
+    """
+    The prime 41, can be written as the sum of six consecutive primes:
+
+    41 = 2 + 3 + 5 + 7 + 11 + 13
+
+    This is the longest sum of consecutive primes that adds to a prime below one-hundred.
+
+    The longest sum of consecutive primes below one-thousand that adds to a prime, contains 21 terms, and
+    is equal to 953.
+
+    Which prime, below one-million, can be written as the sum of the most consecutive primes?
+    """
+    # The number of primes has to be odd, because all primes (but 2) are odd, and the sum of 
+    # an even number of odd numbers will be even, hence, composite
+
+    primes = eratosthenes(10**6)
+    prime_set = set(primes)
+    max_len = 0
+
+    # We need to get the prime right before one-third upperbound, because after that, there can be
+    # no sequence larger than 1, because:
+    #     1) any three consecutive primes exceed the upper bound;
+    #     3) any two consecutive primes summed form an even number
+    largest_idx = len(primes) - 1
+    while primes[largest_idx] > primes[-1] // 3:
+        largest_idx -= 1
+    largest_idx += 1
+
+    prime_sum_lens = [0 for _ in primes]
+    s = sum(primes[:largest_idx + 1])
+    
+    curr_sum = s
+    end_idx = largest_idx
+    while not curr_sum in prime_set and end_idx > 0:
+        curr_sum -= primes[end_idx]
+        end_idx -= 1
+
+    max_len = prime_sum_lens[0] = end_idx + 1
+    max_idx = 0
+
+    for i in range(1, largest_idx):
+        s -= primes[i - 1]
+        
+        # If the max_len * current_prime is larger than our upper bound, then
+        # current_prime + max_len primes larger than current_prime are DEFINITELY
+        # gonna be larger than our upper bound. Any prime above will also surely
+        # have this property, so we can just quit right here.
+        if max_len * primes[i] > primes[-1]:
+            break
+
+        curr_sum = s
+        end_idx = largest_idx
+
+        while not curr_sum in prime_set:
+            curr_sum -= primes[end_idx]
+            end_idx -= 1
+
+        if end_idx - i + 1 > max_len:
+            max_len = end_idx - i + 1
+            max_idx = i
+
+    return sum(primes[max_idx:max_idx+max_len])
