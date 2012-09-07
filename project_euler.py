@@ -1623,3 +1623,35 @@ def problem_48():
     Find the last ten digits of the series, 11 + 22 + 33 + ... + 10001000.
     """
     return str(sum(i**i for i in range(1, 1001)))[-10:]
+
+def problem_49():
+    """
+    The arithmetic sequence, 1487, 4817, 8147, in which each of the terms increases by 3330, is unusual in two ways: 
+    (i) each of the three terms are prime, and, 
+    (ii) each of the 4-digit numbers are permutations of one another.
+
+    There are no arithmetic sequences made up of three 1-, 2-, or 3-digit primes, exhibiting this property, but there is one 
+    other 4-digit increasing sequence.
+
+    What 12-digit number do you form by concatenating the three terms in this sequence?
+    """
+
+    primes = set(i for i in eratosthenes(10**4) if i > 1000)
+    permutations = {}
+
+    for p in primes:
+        key = "".join(sorted(str(p)))
+        if key not in permutations:
+            permutations[key] = [p]
+        else:
+            permutations[key].append(p)
+
+    permutations = {k: v for k, v in permutations.items() if len(v) >= 3}
+
+    for perm in permutations.values():
+        perm.sort()
+
+        for idx, first in enumerate(perm[:-2]):
+            for second in perm[idx+1:-1]:
+                if 2 * second - first in perm and first != 1487 and second != 4817:
+                    return "".join([str(first), str(second), str(2 * second - first)])
