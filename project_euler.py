@@ -1588,3 +1588,30 @@ def problem_46():
             if not found:
                 return i
         i += 2
+
+def problem_47():
+    """
+    The first two consecutive numbers to have two distinct prime factors are:
+
+    14 = 2 x 7
+    15 = 3 x 5
+
+    The first three consecutive numbers to have three distinct prime factors are:
+
+    644 = 2² x 7 x 23
+    645 = 3 x 5 x 43
+    646 = 2 x 17 x 19.
+
+    Find the first four consecutive integers to have four distinct primes factors. What is the first of these numbers?
+    """
+    prime_list = eratosthenes(10**5)
+    
+    factors = [len(factorize(i, prime_list)) for i in range(4)]
+    i = 4
+    
+    while i < prime_list[-1]**2:
+        curr_factors = len(factorize(i, prime_list))
+        factors = factors[1:] + [curr_factors]
+        if factors.count(4) == 4:
+            return i - 3
+        i += 1
