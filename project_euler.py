@@ -1615,3 +1615,11 @@ def problem_47():
         if factors.count(4) == 4:
             return i - 3
         i += 1
+
+def problem_48():
+    """
+    The series, 1^1 + 2^2 + 3^3 + ... + 10^10 = 10405071317.
+
+    Find the last ten digits of the series, 11 + 22 + 33 + ... + 10001000.
+    """
+    return str(sum(i**i for i in range(1, 1001)))[-10:]
