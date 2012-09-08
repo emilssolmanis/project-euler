@@ -728,12 +728,21 @@ def problem_14():
 
     NOTE: Once the chain starts the terms are allowed to go above one million.
     """
+    seq = {1: 1}
 
-    # TODO: takes a while. Since it's a sequence, it overlaps, that can easily be reused,
-    #       but they can diverge at some points. A trie is probably the most appropriate thing
-    #       to use.
-    collatz_lens = [len(collatz(i)) for i in range(1000000)]
-    return collatz_lens.index(max(collatz_lens))
+    for n in range(2, 10**6):
+        l = 0
+        curr_n = n
+        while curr_n > 1 and not curr_n in seq:
+            l += 1
+            if curr_n % 2 == 0:
+                curr_n //= 2
+            else:
+                curr_n = 3 * curr_n + 1
+            if curr_n in seq:
+                seq[n] = seq[curr_n] + l
+
+    return max(seq, key=seq.get)
 
 def problem_15():
     """
