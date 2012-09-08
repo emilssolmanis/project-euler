@@ -261,23 +261,6 @@ def __coin_permutations(nominals, target_sum):
 
     return permutations
 
-def __is_mult(perm):
-    """
-    Checks whether the given list of numbers can be split into consecutive parts of factor | factor | product.
-    """
-    s = str().join(str(i) for i in perm)
-
-    # maintain two indices -- one that splits off factor_1 from factor_2
-    # and another one that splits factor_2 and product
-
-    # for end - 1 to 
-    for p_idx in range(len(s) - 1, 1, -1):
-        for f2_idx in range(p_idx - 1, 0, -1):
-            if int(s[:f2_idx]) * int(s[f2_idx:p_idx]) == int(s[p_idx:]):
-                return (True, int(s[:f2_idx]), int(s[f2_idx:p_idx]), int(s[p_idx:]))
-
-    return (False, 0, 0, 0)
-
 def __rotations(n):
     """
     Generates circular rotations of n.
@@ -1174,15 +1157,13 @@ def problem_32():
 
     HINT: Some products can be obtained in more than one way so be sure to only include it once in your sum.
     """
-    # There's 9! = 362880 permutations of [1..9], if there's a linear (or near-linear) way to check whether a permutation
-    # can be the identity, that should suffice for a brute solution.
-    # TODO: obviously only certain digit-ed numbers need to be checked, e.g., a 1-digit by 1-digit product is max 2-digits, 
+
     prod_set = set()
     perms = __lex_permutations({i for i in range(1, 10)})
     for perm in perms:
-        mult, f1, f2, p = __is_mult(perm)
-        if mult:
-            prod_set.add(p)
+        s = str().join(str(i) for i in perm)
+        if int(s[:2]) * int(s[2:5]) == int(s[5:]) or int(s[:3]) * int(s[3:5]) == int(s[5:]) or int(s[:1]) * int(s[1:5]) == int(s[5:]) or int(s[:4]) * int(s[4:5]) == int(s[5:]):
+            prod_set.add(int(s[5:]))
 
     return sum(prod_set)
 
