@@ -261,6 +261,21 @@ def __coin_permutations(nominals, target_sum):
 
     return permutations
 
+def __num_coin_permutations(nominals, target_sum):
+    """
+    Returns the number of possible ways to get target_sum as a sum of an arbitrary number of elements in nominals -- that is,
+    the possible partitions of target_sum. If compositions are needed, change "nominals[idx:]" to nominals
+    """
+    permutations = 0
+    if target_sum <= 0:
+        return 0
+    for idx, coin in enumerate(sorted(nominals)):
+        if coin == target_sum:
+            permutations += 1
+        permutations +=  __num_coin_permutations(nominals[idx:], target_sum - coin)
+
+    return permutations
+
 def __rotations(n):
     """
     Generates circular rotations of n.
@@ -1144,7 +1159,7 @@ def problem_31():
 
     How many different ways can £2 be made using any number of coins?
     """
-    return len(__coin_permutations([1, 2, 5, 10, 20, 50, 100, 200], 200))
+    return __num_coin_permutations([1, 2, 5, 10, 20, 50, 100, 200], 200)
 
 def problem_32():
     """
