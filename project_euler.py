@@ -1606,15 +1606,30 @@ def problem_47():
     """
     prime_list = eratosthenes(10**5)
     
-    factors = [len(factorize(i, prime_list)) for i in range(4)]
-    i = 4
-    
+    i = 2
     while i < prime_list[-1]**2:
         curr_factors = len(factorize(i, prime_list))
-        factors = factors[1:] + [curr_factors]
-        if factors.count(4) == 4:
-            return i - 3
-        i += 1
+        if curr_factors == 4:
+            above = i
+            above_factors = 4
+            while above_factors == 4:
+                above += 1
+                above_factors = len(factorize(above, prime_list))
+            above -= 1
+            
+            below = i
+            below_factors = 4
+            while below_factors == 4:
+                below -= 1
+                below_factors = len(factorize(below, prime_list))
+            below += 1
+
+            if above - below == 3:
+                return below
+
+            i = above + 1
+        else:
+            i += 4
 
 def problem_48():
     """
@@ -1719,3 +1734,18 @@ def problem_50():
             max_idx = i
 
     return sum(primes[max_idx:max_idx+max_len])
+
+def problem_51():
+    """
+    By replacing the 1st digit of *3, it turns out that six of the nine possible values: 13, 23, 43, 53,
+    73, and 83, are all prime.
+
+    By replacing the 3rd and 4th digits of 56**3 with the same digit, this 5-digit number is the first
+    example having seven primes among the ten generated numbers, yielding the family: 56003, 56113,
+    56333, 56443, 56663, 56773, and 56993. Consequently 56003, being the first member of this family, is
+    the smallest prime with this property.
+
+    Find the smallest prime which, by replacing part of the number (not necessarily adjacent digits) with
+    the same digit, is part of an eight prime value family.
+    """
+    pass
