@@ -930,7 +930,32 @@ def problem_24():
 
     What is the millionth lexicographic permutation of the digits 0, 1, 2, 3, 4, 5, 6, 7, 8 and 9?
     """
-    return __lex_permutations({0, 1, 2, 3, 4, 5, 6, 7, 8, 9})[999999]
+    # The number of permutations of n elements P_n = n!
+    # Therefore, we can find the millionth lexicographic permutation via simple modulo,
+    # multiplication and factorial operations.
+    # 10! = 3'628'800 -- that's all possible permutations.
+
+    # Since we need them in lex order, we can fix a few elements, like, fix 0 and get the
+    # first 9! = 362'880 permutations by changing [1..9] around.
+
+    # Since 10e6 // 9! = 2, we know that the first element is 2. Now we need the 10e6 % 9! = 274240
+    # lex permutation with 2 in the front. Again, fix the first number, 8! = 80640, 274240 // 8! = 6,
+    # so 27*
+
+    # Going on like this, we find all digits
+
+    perm = []
+    elems = [i for i in range(10)]
+
+    n = 999999
+    for i in range(9, -1, -1):
+        f = factorial(i)
+        idx = n // f
+        perm.append(elems[idx])
+        del elems[idx]
+        n %= f
+
+    return "".join(str(i) for i in perm)
 
 def problem_25():
     """
