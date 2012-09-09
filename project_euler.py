@@ -1801,5 +1801,42 @@ def problem_51():
                             min_prime = int(new_num_s)
                         subst_primes += 1
                 if subst_primes > 7:
-                    print("{} by substituting position {}, min_prime = {}".format(p, position, min_prime))
+#                    print("{} by substituting position {}, min_prime = {}".format(p, position, min_prime))
                     return min_prime
+
+def problem_52():
+    """
+    It can be seen that the number, 125874, and its double, 251748, contain exactly the same digits, but
+    in a different order.
+
+    Find the smallest positive integer, x, such that 2x, 3x, 4x, 5x, and 6x, contain the same digits.
+    """
+    i = 1
+    while True:
+        if set(str(i)) == set(str(2*i)) == set(str(3*i)) == set(str(4*i)) == set(str(5*i)) == set(str(6*i)):
+            return i
+        i += 1
+
+def problem_53():
+    """
+    There are exactly ten ways of selecting three from five, 12345:
+    123, 124, 125, 134, 135, 145, 234, 235, 245, and 345
+
+    In combinatorics, we use the notation, ^5C[3] = 10.
+    In general,
+    
+    ^nC[r] = n! / r!(n−r)! ,where r ≤ n, n! = n×(n−1)×...×3×2×1, and 0! = 1.
+
+    It is not until n = 23, that a value exceeds one-million: ^23C[10] = 1144066.
+
+    How many, not necessarily distinct, values of  ^nC[r], for 1 ≤ n ≤ 100, are greater than one-million?
+    """
+    # brute.
+    # Since n choose k == n choose n - k, we could get away with at least half the work, but
+    # this already works in under 1 sec, so whatever...
+    greater = 0
+    for n in range(101):
+        for r in range(n + 1):
+            greater += (factorial(n) // (factorial(r) * factorial(n - r))) > 10**6
+
+    return greater
