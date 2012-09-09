@@ -1840,3 +1840,180 @@ def problem_53():
             greater += (factorial(n) // (factorial(r) * factorial(n - r))) > 10**6
 
     return greater
+
+def problem_54(filename="problem_54.dat"):
+    """
+    In the card game poker, a hand consists of five cards and are ranked, from lowest to highest, in the
+    following way:
+
+    * High Card: Highest value card.
+    * One Pair: Two cards of the same value.
+    * Two Pairs: Two different pairs.
+    * Three of a Kind: Three cards of the same value.
+    * Straight: All cards are consecutive values.
+    * Flush: All cards of the same suit.
+    * Full House: Three of a kind and a pair.
+    * Four of a Kind: Four cards of the same value.
+    * Straight Flush: All cards are consecutive values of same suit.
+    * Royal Flush: Ten, Jack, Queen, King, Ace, in same suit.
+
+    The cards are valued in the order:
+    2, 3, 4, 5, 6, 7, 8, 9, 10, Jack, Queen, King, Ace.
+
+    If two players have the same ranked hands then the rank made up of the highest value wins; for
+    example, a pair of eights beats a pair of fives (see example 1 below). But if two ranks tie, for
+    example, both players have a pair of queens, then highest cards in each hand are compared (see
+    example 4 below); if the highest cards tie then the next highest cards are compared, and so on.
+
+    Consider the following five hands dealt to two players:
+
+    Hand   Player 1            Player 2              Winner  
+
+    1      5H 5C 6S 7S KD      2C 3S 8S 8D TD        Player 2
+           Pair of Fives       Pair of Eights                
+
+    2      5D 8C 9S JS AC      2C 5C 7D 8S QH        Player 1
+           Highest card Ace    Highest card Queen            
+
+    3      2D 9C AS AH AC      3D 6D 7D TD QD        Player 2
+           Three Aces          Flush with Diamonds           
+
+    4      4D 6S 9H QH QC      3D 6D 7H QD QS                
+           Pair of Queens      Pair of Queens        Player 1
+           Highest card Nine   Highest card Seven            
+
+    5      2H 2D 4C 4D 4S      3C 3D 3S 9S 9D                
+           Full House          Full House            Player 1
+           With Three Fours    with Three Threes             
+
+    The file, poker.txt, contains one-thousand random hands dealt to two players. Each line of the file
+    contains ten cards (separated by a single space): the first five are Player 1's cards and the last
+    five are Player 2's cards. You can assume that all hands are valid (no invalid characters or repeated
+    cards), each player's hand is in no specific order, and in each hand there is a clear winner.
+
+    How many hands does Player 1 win?
+    """
+
+    def __rank_hand(hand):
+        """
+        Returns a rank for the given hand.
+
+        0 = High Card: Highest value card.
+        1 = One Pair: Two cards of the same value.
+        2 = Two Pairs: Two different pairs.
+        3 = Three of a Kind: Three cards of the same value.
+        4 = Straight: All cards are consecutive values.
+        5 = Flush: All cards of the same suit.
+        6 = Full House: Three of a kind and a pair.
+        7 = Four of a Kind: Four cards of the same value.
+        8 = Straight Flush: All cards are consecutive values of same suit.
+        9 = Royal Flush: Ten, Jack, Queen, King, Ace, in same suit.
+        """
+        mapping = {"T": 10, "J": 11, "Q": 12, "K": 13, "A": 14}
+        vals = [mapping[c[0]] if c[0] in mapping else int(c[0]) for c in hand]
+        suits = [c[1] for c in hand]
+
+        if len(set(suits)) == 1:
+            if set(vals) == {i for i in range(10, 15)}:
+                return 9
+            elif set(vals) == {i for i in range(min(vals), max(vals) + 1)}:
+                return 8
+            else:
+                return 5
+        else:
+            val_histogram = {val: vals.count(val) for val in set(vals)}
+            max_num_val = max(val_histogram, key=val_histogram.get)
+            if val_histogram[max_num_val] == 4:
+                return 7
+            elif val_histogram[max_num_val] == 3:
+                del val_histogram[max_num_val]
+                max_num_val = max(val_histogram, key=val_histogram.get)
+                if val_histogram[max_num_val] == 2:
+                    return 6
+                else:
+                    return 3
+            elif val_histogram[max_num_val] == 2:
+                del val_histogram[max_num_val]
+                max_num_val = max(val_histogram, key=val_histogram.get)
+                if val_histogram[max_num_val] == 2:
+                    return 2
+                else:
+                    return 1
+            elif set(vals) == {i for i in range(min(vals), max(vals) + 1)}:
+                return 5
+            else:
+                return 0
+
+    def __get_winner(p1, p2):
+        """
+        Pairs - When two players have a pair, the highest pair wins. When both players have the same
+        pair, the next highest card wins. This card is called the 'Kicker'. For example, 5-5-J-7-4 beats 5-5-9-8-7.
+        If the Pairs and the Kickers are the same, the consideration continues onward to the next highest 
+        card in the hand. 5-5-J-6-4 beats 5-5-J-5-3. This evaluation process continues until both hands are exactly 
+        the same or there is a winner.
+
+        Two Pairs - the higher ranked pair wins. A-A-7-7-3 beats K-K-J-J-9. If the top pairs are equal, the
+        second pair breaks the tie. If both the top pair and the second pair are equal, the kicker (the
+        next highest card) breaks the tie.
+
+        Three-of-a-Kind - the higher ranking card wins. J-J-J-7-6 beats 10-10-10-8-7.
+
+        Straights - the Straight with the highest ranking card wins. A-K-Q-J-10 beats 10-9-8-7-6, as the A
+        beats the 10. If both Straights contain cards of the same rank, the pot is split.
+
+        Flush - the Flush with the highest ranking card wins. A-9-8-7-5 beats K-Q-J-5-4. If the highest cards 
+        in each Flush are the same, the next highest cards are compared. This process continues until either 
+        the hands are shown to be exactly the same, or there is a winner.
+
+        Full House - the hand with the higher ranking set of three cards wins. K-K-K-4-4 beats J-J-J-A-A.
+
+        Four of a Kind - the higher ranked set of four cards wins. 7-7-7-7-2 beats 5-5-5-5-A.
+
+        Straight Flush - ties are broken in the same manner as a straight, as the highest ranking card is the winner.
+
+        Royal Flush - Sorry, Two or more Royal Flushes split the pot.
+        """
+        # 0 = High Card: Highest value card.
+        # 1 = One Pair: Two cards of the same value.
+        # 2 = Two Pairs: Two different pairs.
+        # 3 = Three of a Kind: Three cards of the same value.
+        # 4 = Straight: All cards are consecutive values.
+        # 5 = Flush: All cards of the same suit.
+        # 6 = Full House: Three of a kind and a pair.
+        # 7 = Four of a Kind: Four cards of the same value.
+        # 8 = Straight Flush: All cards are consecutive values of same suit.
+        # 9 = Royal Flush: Ten, Jack, Queen, King, Ace, in same suit.
+
+        r1 = __rank_hand(p1)
+        r2 = __rank_hand(p2)
+
+        if r1 > r2:
+            return 1
+        elif r1 < r2:
+            return 2
+        else:
+            mapping = {"T": 10, "J": 11, "Q": 12, "K": 13, "A": 14}
+
+            vals_p1 = [mapping[c[0]] if c[0] in mapping else int(c[0]) for c in p1]
+            suits_p1 = [c[1] for c in p1]
+
+            vals_p2 = [mapping[c[0]] if c[0] in mapping else int(c[0]) for c in p2]
+            suits_p2 = [c[1] for c in p2]
+            if r1 == 9:
+                return 0
+            # for straights, compare highest card only
+            elif r1 in {4, 8}:
+                if max(vals_p1) > max(vals_p2):
+                    return 1
+                elif max(vals_p1) < max(vals_p2):
+                    return 2
+                else:
+                    return 0
+            else:
+                pass
+
+    for line in open(filename, "r"):
+        cards = line.split()
+        p1, p2 = cards[:5], cards[5:]
+        print("{}, {}".format(p1, p2))
+        return 0
