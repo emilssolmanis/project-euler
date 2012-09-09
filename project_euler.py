@@ -1778,4 +1778,28 @@ def problem_51():
     Find the smallest prime which, by replacing part of the number (not necessarily adjacent digits) with
     the same digit, is part of an eight prime value family.
     """
-    pass
+    # brute force, works in under a minute, but should find something better
+
+    primes = eratosthenes(10**6)
+    prime_set = set(primes)
+
+    for p in primes:
+        s = str(p)
+#        print("Checking {}".format(p))
+        for num_subst in range(1, len(s)):
+            positions = __combinations({i for i in range(len(s))}, num_subst)
+            for position in positions:
+                subst_primes = 0
+                min_prime = 0
+                for subst in range(10):
+                    new_num = list(s)
+                    for pos in position:
+                        new_num[pos] = str(subst)
+                    new_num_s = "".join(i for i in new_num)
+                    if len(str(int(new_num_s))) == len(s) and int(new_num_s) in prime_set:
+                        if subst_primes == 0:
+                            min_prime = int(new_num_s)
+                        subst_primes += 1
+                if subst_primes > 7:
+                    print("{} by substituting position {}, min_prime = {}".format(p, position, min_prime))
+                    return min_prime
