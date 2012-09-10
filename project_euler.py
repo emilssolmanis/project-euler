@@ -2112,3 +2112,34 @@ def problem_56():
             res = max(res, sum(int(k) for k in str(i**j)))
     
     return res
+
+def problem_57():
+    """
+    It is possible to show that the square root of two can be expressed as an infinite continued 
+    fraction.
+
+    sqrt 2 = 1 + 1/(2 + 1/(2 + 1/(2 + ... ))) = 1.414213...
+
+    By expanding this for the first four iterations, we get:
+
+    1 + 1/2 = 3/2 = 1.5
+    1 + 1/(2 + 1/2) = 7/5 = 1.4
+    1 + 1/(2 + 1/(2 + 1/2)) = 17/12 = 1.41666...
+    1 + 1/(2 + 1/(2 + 1/(2 + 1/2))) = 41/29 = 1.41379...
+
+    The next three expansions are 99/70, 239/169, and 577/408, but the eighth expansion, 1393/985, 
+    is the first example where the number of digits in the numerator exceeds the number of digits 
+    in the denominator.
+
+    In the first one-thousand expansions, how many fractions contain a numerator with more digits 
+    than denominator?
+    """
+    res = 0
+    for i in range(1000):
+        denom = fractions.Fraction(2, 1)
+        for j in range(i):
+            denom = 2 + 1 / denom
+        total = 1 + 1 / denom
+        res += len(str(total.numerator)) > len(str(total.denominator))
+
+    return res
