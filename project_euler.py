@@ -2134,12 +2134,14 @@ def problem_57():
     In the first one-thousand expansions, how many fractions contain a numerator with more digits 
     than denominator?
     """
+
     res = 0
-    for i in range(1000):
-        denom = fractions.Fraction(2, 1)
-        for j in range(i):
-            denom = 2 + 1 / denom
-        total = 1 + 1 / denom
-        res += len(str(total.numerator)) > len(str(total.denominator))
+    approximations = [fractions.Fraction(1, 1), fractions.Fraction(3, 2)]
+
+    for i in range(2, 1000):
+        curr_approx = fractions.Fraction(2 * approximations[i - 1].numerator + approximations[i - 2].numerator, 
+                                        2 * approximations[i - 1].denominator + approximations[i - 2].denominator)
+        approximations.append(curr_approx)
+        res += len(str(curr_approx.numerator)) > len(str(curr_approx.denominator))
 
     return res
