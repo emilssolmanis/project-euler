@@ -1947,43 +1947,38 @@ def problem_54(filename="problem_54.dat"):
     def __get_winner(p1, p2):
         """
         Pairs - When two players have a pair, the highest pair wins. When both players have the same
-        pair, the next highest card wins. This card is called the 'Kicker'. For example, 5-5-J-7-4 beats 5-5-9-8-7.
-        If the Pairs and the Kickers are the same, the consideration continues onward to the next highest 
-        card in the hand. 5-5-J-6-4 beats 5-5-J-5-3. This evaluation process continues until both hands are exactly 
+        pair, the next highest card wins. This card is called the 'Kicker'. For example, 5-5-J-7-4
+        beats 5-5-9-8-7.
+        If the Pairs and the Kickers are the same, the consideration continues onward to the next
+        highest 
+        card in the hand. 5-5-J-6-4 beats 5-5-J-5-3. This evaluation process continues until both 
+        hands are exactly 
         the same or there is a winner.
 
-        Two Pairs - the higher ranked pair wins. A-A-7-7-3 beats K-K-J-J-9. If the top pairs are equal, the
-        second pair breaks the tie. If both the top pair and the second pair are equal, the kicker (the
-        next highest card) breaks the tie.
+        Two Pairs - the higher ranked pair wins. A-A-7-7-3 beats K-K-J-J-9. If the top pairs are 
+        equal, the second pair breaks the tie. If both the top pair and the second pair are equal, 
+        the kicker (the next highest card) breaks the tie.
 
         Three-of-a-Kind - the higher ranking card wins. J-J-J-7-6 beats 10-10-10-8-7.
 
-        Straights - the Straight with the highest ranking card wins. A-K-Q-J-10 beats 10-9-8-7-6, as the A
-        beats the 10. If both Straights contain cards of the same rank, the pot is split.
+        Straights - the Straight with the highest ranking card wins. A-K-Q-J-10 beats 10-9-8-7-6, 
+        as the A beats the 10. If both Straights contain cards of the same rank, the pot is split.
 
-        Flush - the Flush with the highest ranking card wins. A-9-8-7-5 beats K-Q-J-5-4. If the highest cards 
-        in each Flush are the same, the next highest cards are compared. This process continues until either 
-        the hands are shown to be exactly the same, or there is a winner.
+        Flush - the Flush with the highest ranking card wins. A-9-8-7-5 beats K-Q-J-5-4. If 
+        the highest cards in each Flush are the same, the next highest cards are compared. This 
+        process continues until either the hands are shown to be exactly the same, or there is 
+        a winner.
 
-        Full House - the hand with the higher ranking set of three cards wins. K-K-K-4-4 beats J-J-J-A-A.
+        Full House - the hand with the higher ranking set of three cards wins. K-K-K-4-4 beats 
+        J-J-J-A-A.
 
         Four of a Kind - the higher ranked set of four cards wins. 7-7-7-7-2 beats 5-5-5-5-A.
 
-        Straight Flush - ties are broken in the same manner as a straight, as the highest ranking card is the winner.
+        Straight Flush - ties are broken in the same manner as a straight, as the highest ranking 
+        card is the winner.
 
         Royal Flush - Sorry, Two or more Royal Flushes split the pot.
         """
-        # 0 = High Card: Highest value card.
-        # 1 = One Pair: Two cards of the same value.
-        # 2 = Two Pairs: Two different pairs.
-        # 3 = Three of a Kind: Three cards of the same value.
-        # 4 = Straight: All cards are consecutive values.
-        # 5 = Flush: All cards of the same suit.
-        # 6 = Full House: Three of a kind and a pair.
-        # 7 = Four of a Kind: Four cards of the same value.
-        # 8 = Straight Flush: All cards are consecutive values of same suit.
-        # 9 = Royal Flush: Ten, Jack, Queen, King, Ace, in same suit.
-
         r1 = __rank_hand(p1)
         r2 = __rank_hand(p2)
 
@@ -1999,6 +1994,13 @@ def problem_54(filename="problem_54.dat"):
 
             vals_p2 = [mapping[c[0]] if c[0] in mapping else int(c[0]) for c in p2]
             suits_p2 = [c[1] for c in p2]
+
+            val_histogram_p1 = {val: vals_p1.count(val) for val in set(vals_p1)}
+            max_num_val_p1 = max(val_histogram_p1, key=val_histogram_p1.get)
+
+            val_histogram_p2 = {val: vals_p2.count(val) for val in set(vals_p2)}
+            max_num_val_p2 = max(val_histogram_p2, key=val_histogram_p2.get)
+
             if r1 == 9:
                 return 0
             # for straights, compare highest card only
@@ -2009,11 +2011,47 @@ def problem_54(filename="problem_54.dat"):
                     return 2
                 else:
                     return 0
+            # four of a kind, three of a kind or full house
+            elif r1 in {3, 6, 7}:
+                if max_num_val_p1 > max_num_val_p2:
+                    return 1
+                elif max_num_val_p1 < max_num_val_p2:
+                    return 2
+                else:
+                    return 0
+            # flush or high card
+            elif r1 in {0, 5}:
+                if sorted(vals_p1, reverse=True) > sorted(vals_p2, reverse=True):
+                    return 1
+                elif sorted(vals_p1, reverse=True) < sorted(vals_p2, reverse=True):
+                    return 2
+                else:
+                    return 0
+            # two pairs
+            elif r1 in {1, 2}:
+                pairs_p1 = [k for k, v in val_histogram_p1.items() if v == 2]
+                pairs_p2 = [k for k, v in val_histogram_p2.items() if v == 2]
+                
+                if sorted(pairs_p1, reverse=True) > sorted(pairs_p2, reverse=True):
+                    return 1
+                elif sorted(pairs_p1, reverse=True) < sorted(pairs_p2, reverse=True):
+                    return 2
+                else:
+                    kicker_p1 = [k for k, v in val_histogram_p1.items() if v == 1]
+                    kicker_p2 = [k for k, v in val_histogram_p2.items() if v == 1]
+                    if sorted(kicker_p1, reverse=True) > sorted(kicker_p2, reverse=True):
+                        return 1
+                    elif sorted(kicker_p1, reverse=True) < sorted(kicker_p2, reverse=True):
+                        return 2
+                    else:
+                        return 0
             else:
-                pass
+                return None
 
+    p1_win = 0
     for line in open(filename, "r"):
         cards = line.split()
         p1, p2 = cards[:5], cards[5:]
-        print("{}, {}".format(p1, p2))
-        return 0
+        p1_win += __get_winner(p1, p2) == 1
+
+    return p1_win
