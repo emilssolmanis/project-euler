@@ -2235,5 +2235,73 @@ def problem_59(filename="problem_59.dat"):
         cypher = [int(i) for i in f.readline().split(",")]
     
     msg = __crack(cypher)
-    print("Message: \n{}".format(msg))
     return sum(ord(char) for char in msg)
+
+def problem_60():
+    """
+    The primes 3, 7, 109, and 673, are quite remarkable. By taking any two primes and concatenating
+    them in any order the result will always be prime. For example, taking 7 and 109, both 7109 and
+    1097 are prime. The sum of these four primes, 792, represents the lowest sum for a set of four
+    primes with this property.
+
+    Find the lowest sum for a set of five primes for which any two primes concatenate to produce
+    another prime.
+    """
+    def __add_next_states(front, space, states):
+        for state in front:
+            indices = set(state)
+            for i in range(len(state)):
+                offset = 1
+                while state[i] + offset in indices:
+                    offset += 1
+
+                new_state = list(state)
+                new_state[i] += offset
+                new_state.sort()
+                new_state = tuple(new_state)
+                key = sum(space[j] for j in new_state)
+                if key not in states:
+                    states[key] = {new_state}
+                else:
+                    states[key].add(new_state)
+
+                    
+    def __check_property(nums, prime_set):
+        for first in nums:
+            for second in nums.difference({first}):
+                if int(str(first) + str(second)) not in prime_set:
+                    return False
+
+        return True
+
+    primes = eratosthenes(10**7)
+    prime_set = set(primes)
+    states = {15: {(1, 2, 3)}}
+    
+    while True:
+        min_key = min(states)
+        min_states = states[min_key]
+
+        s = 0
+        for state in min_states:
+            s = sum(primes[j] for j in state)
+            break
+
+        print("Working with sum {}, front size {}".format(s, len(min_states)))
+        # if s == 99:
+        #     st = []
+        #     for state in min_states:
+        #         nums = {primes[i] for i in state}
+        #         st.append(sorted(nums))
+        #     st.sort()
+        #     for l in st:
+        #         print(l)
+        #     return None
+
+        for state in min_states:
+            nums = {primes[i] for i in state}
+            if __check_property(nums, prime_set):
+                return nums
+
+        __add_next_states(min_states, primes, states)
+        del states[min_key]
