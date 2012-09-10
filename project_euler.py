@@ -2145,3 +2145,46 @@ def problem_57():
         res += len(str(curr_approx.numerator)) > len(str(curr_approx.denominator))
 
     return res
+
+def problem_58():
+    """
+    Starting with 1 and spiralling anticlockwise in the following way, a square spiral with side 
+    length 7 is formed.
+
+    37 36 35 34 33 32 31
+    38 17 16 15 14 13 30
+    39 18  5  4  3 12 29
+    40 19  6  1  2 11 28
+    41 20  7  8  9 10 27
+    42 21 22 23 24 25 26
+    43 44 45 46 47 48 49
+
+    It is interesting to note that the odd squares lie along the bottom right diagonal, but what is
+    more interesting is that 8 out of the 13 numbers lying along both diagonals are prime; that is, 
+    a ratio of 8/13 ~ 62%.
+
+    If one complete new layer is wrapped around the spiral above, a square spiral with side length 
+    9 will be formed. If this process is continued, what is the side length of the square spiral for
+    which the ratio of primes along both diagonals first falls below 10%?
+    """
+    primes = eratosthenes(10**5)
+
+    # assume "1" is already generated
+    num_primes = 3
+    num_total = 5
+
+    i = 2
+    while num_primes / num_total > 0.1:
+        br = (2 * i + 1)**2
+        tr = br - 6 * i
+        tl = (2 * i)**2 + 1
+        bl = tl + 2 * i
+        
+        num_primes += sum([__is_prime(br, primes), __is_prime(tr, primes), 
+                           __is_prime(tl, primes), __is_prime(bl, primes)])
+        num_total += 4
+#        print("Adding {}, primes: {}".format([br, tr, tl, bl], [i for i in [br, tr, tl, bl] if __is_prime(i, primes)]))
+#        print("Side {}: {} primes, {} total, ratio {}".format(2 * i + 1, num_primes, num_total, num_primes / num_total))
+        i += 1
+
+    return 2 * i - 1
