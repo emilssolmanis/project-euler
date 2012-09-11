@@ -2247,61 +2247,34 @@ def problem_60():
     Find the lowest sum for a set of five primes for which any two primes concatenate to produce
     another prime.
     """
-    def __add_next_states(front, space, states):
-        for state in front:
-            indices = set(state)
-            for i in range(len(state)):
-                offset = 1
-                while state[i] + offset in indices:
-                    offset += 1
-
-                new_state = list(state)
-                new_state[i] += offset
-                new_state.sort()
-                new_state = tuple(new_state)
-                key = sum(space[j] for j in new_state)
-                if key not in states:
-                    states[key] = {new_state}
-                else:
-                    states[key].add(new_state)
-
-                    
-    def __check_property(nums, prime_set):
+    def __check_property(nums, primes, prime_set):
         for first in nums:
             for second in nums.difference({first}):
-                if int(str(first) + str(second)) not in prime_set:
+                new_num = int(str(first) + str(second))
+                if (new_num < primes[-1] and new_num not in prime_set) or not __is_prime(new_num, primes):
                     return False
 
         return True
 
     primes = eratosthenes(10**7)
     prime_set = set(primes)
-    states = {15: {(1, 2, 3)}}
     
-    while True:
-        min_key = min(states)
-        min_states = states[min_key]
+    summosaurus = []
 
-        s = 0
-        for state in min_states:
-            s = sum(primes[j] for j in state)
-            break
-
-        print("Working with sum {}, front size {}".format(s, len(min_states)))
-        # if s == 99:
-        #     st = []
-        #     for state in min_states:
-        #         nums = {primes[i] for i in state}
-        #         st.append(sorted(nums))
-        #     st.sort()
-        #     for l in st:
-        #         print(l)
-        #     return None
-
-        for state in min_states:
-            nums = {primes[i] for i in state}
-            if __check_property(nums, prime_set):
-                return nums
-
-        __add_next_states(min_states, primes, states)
-        del states[min_key]
+    for p in primes:
+        print("Working on {}, list len {}".format(p, len(summosaurus)))
+        res = []
+        new_sets = []
+        for nums in summosaurus:
+            new_set = nums.union({p})
+#            print("Checking {}".format(sorted(new_set)))
+            if __check_property(new_set, primes, prime_set):
+                new_sets.append(new_set)
+                if len(new_set) == 5: 
+                    res.append(new_set)
+        for new_set in new_sets:
+            summosaurus.append(new_set)
+        if res:
+            return res
+            
+        summosaurus.append({p})
