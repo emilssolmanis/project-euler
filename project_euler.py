@@ -2247,6 +2247,9 @@ def problem_60():
     Find the lowest sum for a set of five primes for which any two primes concatenate to produce
     another prime.
     """
+    # Bruted the solution on work's Xeon, sum({8389, 5701, 6733, 5197, 13}) = 26033
+    # Still need to get a decent algorithm though
+
     def __check_property(nums, primes, prime_set):
         for first in nums:
             for second in nums.difference({first}):
